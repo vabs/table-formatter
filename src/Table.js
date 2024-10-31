@@ -85,24 +85,24 @@ const Table = () => {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.shiftKey) {
+      if (event.ctrlKey) {
         switch (event.key) {
-          case 'A':
+          case 'a':
             addColumn();
             break;
-          case 'R':
+          case 'r':
             removeColumn();
             break;
-          case 'S':
+          case 's':
             addRow();
             break;
-          case 'D':
+          case 'd':
             removeRow();
             break;
-          case 'M':
+          case 'm':
             copyToMarkdown();
             break;
-          case 'L':
+          case 'l':
             copyToSlack();
             break;
           default:
@@ -121,14 +121,14 @@ const Table = () => {
     <div className="table-container">
       <h1>Table Formatter</h1>
       <div className="button-row">
-        <button onClick={addColumn}><FaPlus /> Add Column (Shift + A)</button>
-        <button onClick={removeColumn}><FaMinus /> Remove Column (Shift + R)</button>
-        <button onClick={addRow}><FaPlus /> Add Row (Shift + S)</button>
-        <button onClick={removeRow}><FaMinus /> Remove Row (Shift + D)</button>
+        <button onClick={addColumn}><FaPlus /> Add Column (Ctrl + A)</button>
+        <button onClick={removeColumn}><FaMinus /> Remove Column (Ctrl + R)</button>
+        <button onClick={addRow}><FaPlus /> Add Row (Ctrl + S)</button>
+        <button onClick={removeRow}><FaMinus /> Remove Row (Ctrl + D)</button>
       </div>
       <div className="button-row">
-        <button className="copy-button" onClick={copyToSlack}><FaTable /> Copy to Slack (Shift + L)</button>
-        <button className="copy-button" onClick={copyToMarkdown}><FaCopy /> Copy to Markdown (Shift + M)</button>
+        <button className="copy-button" onClick={copyToSlack}><FaTable /> Copy to Slack (Ctrl + L)</button>
+        <button className="copy-button" onClick={copyToMarkdown}><FaCopy /> Copy to Markdown (Ctrl + M)</button>
       </div>
       <table className="styled-table">
         <thead>
