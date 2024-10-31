@@ -2,7 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './table.css';
-import { FaPlus, FaMinus, FaCopy, FaTable } from 'react-icons/fa';
+import {
+    FaPlus,
+    FaMinus,
+    FaDiscord,
+    FaSlack,
+    FaMarkdown,
+} from 'react-icons/fa';
 
 const Table = () => {
     const [columns, setColumns] = useState(['Column 1']);
@@ -60,7 +66,7 @@ const Table = () => {
         });
     };
 
-    const copyToSlack = () => {
+    const copyForMessagingPlatform = () => {
         const columnWidths = headers.map((header, index) => {
             const maxCellLength = Math.max(
                 ...rows.map((row) => row[index].length)
@@ -95,7 +101,7 @@ const Table = () => {
         slackFormat += createSeparator();
 
         navigator.clipboard.writeText(slackFormat).then(() => {
-            toast.success('Table copied to clipboard in Slack format!');
+            toast.success('Table copied to clipboard!');
         });
     };
 
@@ -119,7 +125,8 @@ const Table = () => {
                         copyToMarkdown();
                         break;
                     case 'l':
-                        copyToSlack();
+                    case 'k':
+                        copyForMessagingPlatform();
                         break;
                     default:
                         break;
@@ -151,11 +158,20 @@ const Table = () => {
                 </button>
             </div>
             <div className="button-row">
-                <button className="copy-button" onClick={copyToSlack}>
-                    <FaTable /> Copy to Slack (Ctrl + L)
+                <button
+                    className="copy-button"
+                    onClick={copyForMessagingPlatform}
+                >
+                    <FaSlack /> Copy to Slack (Ctrl + L)
+                </button>
+                <button
+                    className="copy-button"
+                    onClick={copyForMessagingPlatform}
+                >
+                    <FaDiscord /> Copy to Discord (Ctrl + K)
                 </button>
                 <button className="copy-button" onClick={copyToMarkdown}>
-                    <FaCopy /> Copy to Markdown (Ctrl + M)
+                    <FaMarkdown /> Copy to Markdown (Ctrl + M)
                 </button>
             </div>
             <table className="styled-table">
