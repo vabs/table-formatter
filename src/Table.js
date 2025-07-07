@@ -14,6 +14,8 @@ const Table = () => {
     const [columns, setColumns] = useState(['Column 1']);
     const [rows, setRows] = useState([['']]);
     const [headers, setHeaders] = useState(['Header 1']);
+    const [focus, setFocus] = useState(null);
+
 
     const addColumn = () => {
         setColumns([...columns, `Column ${columns.length + 1}`]);
@@ -31,6 +33,8 @@ const Table = () => {
 
     const addRow = () => {
         setRows([...rows, Array(columns.length).fill('')]);
+        // Trigger focus after state update
+        setFocus({ type: 'row' });
     };
 
     const removeRow = () => {
@@ -129,6 +133,59 @@ const Table = () => {
                     case 'k':
                         copyForMessagingPlatform();
                         break;
+                    case 'Enter':
+                        // Control + Enter uses default textarea behavior.  Do nothing.
+                        break;
+                    default:
+                        break;
+                }
+            } else if (event.shiftKey && ['Enter'].includes(event.key)) {
+                // Default behavior for Shift + Enter in textarea is to add a newline.  Do nothing.
+            } else if (['Tab', 'Enter'].includes(event.key)) {
+                const activeElement = document.activeElement;
+                const isTextArea = activeElement.tagName === 'TEXTAREA';
+                let isLastColumn = false;
+                let isLastRow = false;
+                let activeParent1, activeParent2, activeParent3;
+                let rowIndex = undefined;
+                let columnIndex = undefined;
+
+                if (isTextArea) {
+                    activeParent1 = activeElement.parentElement; // <td>
+                    activeParent2 = activeParent1.parentElement; // <tr>
+                    activeParent3 = activeParent2.parentElement; // <tbody>
+
+                    isLastColumn = (activeParent1 === activeParent2.lastElementChild) ? true : false;
+                    isLastRow = (activeParent2 === activeParent3.lastElementChild) ? true : false;
+
+                    rowIndex = Array.from(activeParent3.children).indexOf(activeParent2);
+                    columnIndex = Array.from(activeParent2.children).indexOf(activeParent1);
+                }
+
+                switch (event.key) {
+                    case 'Tab':
+                        // Allow tab navigation within the table
+                        if (isTextArea) {
+                            // Check if the parent <td> is the last child in its row
+                            if (isLastColumn) {
+                                // event.preventDefault(); // Prevent default tab behavior
+                                addColumn(); // Add a new column
+                            }
+                        }
+                        break;
+                    case 'Enter':
+                        event.preventDefault();
+
+                        // Add a new row if focused in the last row of the table
+                        if (isTextArea) {
+                            if (isLastRow) {
+                                addRow();
+                            } else {
+                                // Move focus to the next row
+                                setFocus({ type: 'row', rowIndex: rowIndex + 1, columnIndex: columnIndex });
+                            }
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -140,6 +197,29 @@ const Table = () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [columns, rows, headers]);
+
+    // Handle focus
+    useEffect(() => {
+        if (focus) {
+            let targetElement = null;
+
+            if (focus.rowIndex !== undefined && focus.columnIndex !== undefined) {
+                targetElement = document.querySelector(
+                    `tbody tr:nth-child(${focus.rowIndex + 1}) td:nth-child(${focus.columnIndex + 1}) textarea`
+                );
+            } else {
+                targetElement = document.querySelector(
+                    `tbody tr:last-child td:first-child textarea`
+                );
+            }
+
+            if (targetElement) {
+                targetElement.focus();
+            }
+
+            setFocus(null); // Reset focus state after applying
+        }
+    }, [focus]);
 
     return (
         <div className="table-container">
