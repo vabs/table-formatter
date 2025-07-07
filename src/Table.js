@@ -108,6 +108,7 @@ const Table = () => {
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.ctrlKey) {
+                if ('arsdmlk'.indexOf(event.key) !== -1) { event.preventDefault(); }
                 switch (event.key) {
                     case 'a':
                         addColumn();
