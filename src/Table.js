@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 import './table.css';
 import {
     FaPlus,
@@ -16,7 +18,6 @@ const Table = () => {
     const [rows, setRows] = useState([['']]);
     const [headers, setHeaders] = useState(['Header 1']);
     const [focus, setFocus] = useState(null);
-
 
     const addColumn = () => {
         setColumns([...columns, `Column ${columns.length + 1}`]);
@@ -115,6 +116,92 @@ const Table = () => {
         });
     };
 
+    const isTabularDataType = (clipboardData) => {
+        if (clipboardData.indexOf('\t') !== -1) {
+            // excel style tab delimited data
+            let rows = clipboardData.split('\n');
+            rows = rows.map((row) => row.split('\t'));
+
+            if (rows === clipboardData) return false;
+
+            return 'tsv';
+        } else if (clipboardData.indexOf(',') !== -1) {
+            // csv style comma delimited data
+            let rows = clipboardData.split('\n');
+            rows = rows.map((row) => row.split(','));
+
+            if (rows === clipboardData) return false;
+
+            return 'csv';
+        } else if (clipboardData.indexOf('|') !== -1) {
+            // markdown style pipe delimited data
+            let rows = clipboardData.split('\n');
+            rows = rows.map((row) => {
+                let tempRow = row.replace(/^\|+|\|+$/g, '').split('|');
+                if (tempRow === row) return false;
+                return tempRow;
+            });
+
+            let filteredRows = rows.filter((row) => row[0].trim().indexOf('+--') !== 0);
+
+            if (filteredRows.length === 0) return false;
+
+            if (filteredRows === clipboardData) return false;
+
+            return 'pipe';
+        }
+
+        return false;
+    };
+
+    const doTablePaste = (pastedData, dataType) => {
+        let rowsData = [], newHeaders = [], newRows = [], headerDetected = false;
+
+        switch (dataType) {
+            case 'tsv': // excel style tab delimited data
+                rowsData = pastedData.split('\n');
+                newHeaders = rowsData[0].split('\t');
+                setHeaders(newHeaders);
+                newRows = rowsData.slice(1).map((row) => row.split('\t'));
+                setRows(newRows);
+                toast.success('Pasted data applied successfully.');
+                return [...newHeaders, ...newRows];
+                break;
+            case 'csv': // csv style comma delimited data
+                rowsData = pastedData.split('\n');
+                newHeaders = rowsData[0].split(',');
+                setHeaders(newHeaders);
+                newRows = rowsData.slice(1).map((row) => row.split(','));
+                setRows(newRows);
+                toast.success('Pasted data applied successfully.');
+                return [...newHeaders, ...newRows];
+                break;
+            case 'pipe': // markdown style pipe delimited data
+                rowsData = pastedData.split('\n');
+                if (rowsData[2].indexOf('+--') === 0) { let headerDetected = true; }
+                rowsData = rowsData.map((row, index) => {
+                    row = row.replace(/^\|+|\|+$/g, '').split('|');
+                    row = row.map((cell) => cell.trim());
+                    return row;
+                });
+                rowsData = rowsData.filter((row) => row[0].indexOf('+--') !== 0);
+
+                if (rowsData.length === 0) return false;
+
+                if (headerDetected) { newHeaders = rowsData.slice(1); }
+                setHeaders(newHeaders);
+                newRows = rowsData.slice(headerDetected ? 1 : 0);
+                setRows(newRows);
+                toast.success('Pasted data applied successfully.');
+                return [...newHeaders, ...newRows];
+                break;
+            default:
+                toast.error('Unsupported data format for pasting.');
+                return false;
+        }
+    };
+
+    // Handle keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.ctrlKey) {
@@ -213,6 +300,41 @@ const Table = () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [columns, rows, headers]);
+
+    // Handle paste events
+    useEffect(() => {
+        const handlePaste = async (event) => {
+            try {
+                const pastedData = await navigator.clipboard.readText();
+                const dataType = isTabularDataType(pastedData);
+
+                if (pastedData && dataType) {
+                    confirmAlert({
+                        title: 'Confirm Paste',
+                        message: 'Do you want to overwrite the current table with the pasted data?',
+                        buttons: [
+                            {
+                                label: 'Yes',
+                                onClick: () => doTablePaste(pastedData, dataType),
+                            },
+                            {
+                                label: 'No',
+                                onClick: () => false,
+                            },
+                        ],
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to read clipboard contents: ', error);
+                toast.error('Failed to read clipboard contents.');
+            }
+        }
+
+        window.addEventListener('paste', handlePaste);
+        return () => {
+            window.removeEventListener('paste', handlePaste);
+        };
+    }, []);
 
     // Handle focus
     useEffect(() => {
