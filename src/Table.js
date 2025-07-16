@@ -8,6 +8,7 @@ import {
     FaDiscord,
     FaSlack,
     FaMarkdown,
+    FaSync,
 } from 'react-icons/fa';
 
 const Table = () => {
@@ -42,6 +43,11 @@ const Table = () => {
             setRows(rows.slice(0, -1));
         }
     };
+    const clearTable = () => {
+        setColumns(['Column 1']);
+        setHeaders(['Header 1']);
+        setRows([['']]);
+    }
 
     const handleCellChange = (rowIndex, colIndex, value) => {
         const newRows = rows.map((row, rIdx) =>
@@ -112,7 +118,7 @@ const Table = () => {
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.ctrlKey) {
-                if ('arsdmlk'.indexOf(event.key) !== -1) { event.preventDefault(); }
+                if ('arsdmlk'.indexOf(event.key) !== -1 || ['Delete'].includes(event.key)) { event.preventDefault(); }
                 switch (event.key) {
                     case 'a':
                         addColumn();
@@ -133,6 +139,10 @@ const Table = () => {
                     case 'k':
                         copyForMessagingPlatform();
                         break;
+                    case 'Delete':
+                        // Ctrl + Del causes hard reset.  Ignores focus.
+                        clearTable();
+                        break;
                     case 'Enter':
                         // Control + Enter uses default textarea behavior.  Do nothing.
                         break;
@@ -141,7 +151,7 @@ const Table = () => {
                 }
             } else if (event.shiftKey && ['Enter'].includes(event.key)) {
                 // Default behavior for Shift + Enter in textarea is to add a newline.  Do nothing.
-            } else if (['Tab', 'Enter'].includes(event.key)) {
+            } else if (['Delete', 'Tab', 'Enter'].includes(event.key)) {
                 const activeElement = document.activeElement;
                 const isTextArea = activeElement.tagName === 'TEXTAREA';
                 let isLastColumn = false;
@@ -163,6 +173,12 @@ const Table = () => {
                 }
 
                 switch (event.key) {
+                    case 'Delete':
+                        // Check if the focused element is an input or textarea
+                        if (!isTextArea) {
+                            clearTable();
+                        }
+                        break;
                     case 'Tab':
                         // Allow tab navigation within the table
                         if (isTextArea) {
@@ -236,6 +252,9 @@ const Table = () => {
                 </button>
                 <button onClick={removeRow}>
                     <FaMinus /> Remove Row (Ctrl + D)
+                </button>
+                <button onClick={clearTable}>
+                    <FaSync /> Clear Table (Ctrl + Del)
                 </button>
             </div>
             <div className="button-row">
