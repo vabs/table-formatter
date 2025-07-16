@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/table-formatter/static/css/main.44f4fe18.css",
-    "main.js": "/table-formatter/static/js/main.f9ee3f12.js",
-    "static/js/453.9bb85af8.chunk.js": "/table-formatter/static/js/453.9bb85af8.chunk.js",
+    "main.css": "/table-formatter/static/css/main.316e3032.css",
+    "main.js": "/table-formatter/static/js/main.b4ccace2.js",
+    "static/js/453.b78728f9.chunk.js": "/table-formatter/static/js/453.b78728f9.chunk.js",
     "index.html": "/table-formatter/index.html",
-    "main.44f4fe18.css.map": "/table-formatter/static/css/main.44f4fe18.css.map",
-    "main.f9ee3f12.js.map": "/table-formatter/static/js/main.f9ee3f12.js.map",
-    "453.9bb85af8.chunk.js.map": "/table-formatter/static/js/453.9bb85af8.chunk.js.map"
+    "main.316e3032.css.map": "/table-formatter/static/css/main.316e3032.css.map",
+    "main.b4ccace2.js.map": "/table-formatter/static/js/main.b4ccace2.js.map",
+    "453.b78728f9.chunk.js.map": "/table-formatter/static/js/453.b78728f9.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.44f4fe18.css",
-    "static/js/main.f9ee3f12.js"
+    "static/css/main.316e3032.css",
+    "static/js/main.b4ccace2.js"
   ]
 }
