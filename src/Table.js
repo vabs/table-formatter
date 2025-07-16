@@ -166,7 +166,6 @@ const Table = () => {
                 setRows(newRows);
                 toast.success('Pasted data applied successfully.');
                 return [...newHeaders, ...newRows];
-                break;
             case 'csv': // csv style comma delimited data
                 rowsData = pastedData.split('\n');
                 newHeaders = rowsData[0].split(',');
@@ -175,11 +174,10 @@ const Table = () => {
                 setRows(newRows);
                 toast.success('Pasted data applied successfully.');
                 return [...newHeaders, ...newRows];
-                break;
             case 'pipe': // markdown style pipe delimited data
                 rowsData = pastedData.split('\n');
                 if (rowsData[2].indexOf('+--') === 0) { let headerDetected = true; }
-                rowsData = rowsData.map((row, index) => {
+                rowsData = rowsData.map((row, _index) => {
                     row = row.replace(/^\|+|\|+$/g, '').split('|');
                     row = row.map((cell) => cell.trim());
                     return row;
@@ -194,7 +192,6 @@ const Table = () => {
                 setRows(newRows);
                 toast.success('Pasted data applied successfully.');
                 return [...newHeaders, ...newRows];
-                break;
             default:
                 toast.error('Unsupported data format for pasting.');
                 return false;
@@ -270,7 +267,7 @@ const Table = () => {
                         // Allow tab navigation within the table
                         if (isTextArea) {
                             // Check if the parent <td> is the last child in its row
-                            if (isLastColumn) {
+                            if (isLastColumn && !event.shiftKey) {
                                 // event.preventDefault(); // Prevent default tab behavior
                                 addColumn(); // Add a new column
                             }
