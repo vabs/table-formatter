@@ -12,7 +12,7 @@ h1 {
 }
 
 .button-row {
-    display: flex;
+  display: flex;
   margin-bottom: 10px;
 }
 
@@ -43,7 +43,7 @@ button:hover {
 }
 
 .styled-table {
-    border: 1px solid black;
+  border: 1px solid black;
   border-collapse: collapse;
   margin: 25px 0;
   font-size: 18px;
@@ -79,9 +79,20 @@ button:hover {
   color: #009879;
 }
 
-input[type="text"], textarea {
+input[type="text"],
+textarea {
   width: 100%;
   padding: 5px;
   box-sizing: border-box;
   resize: both;
+}
+
+/* Confirm-alert dialog styles */
+.react-confirm-alert-body>h1 {
+  color: #121212;
+}
+
+.react-confirm-alert-button-group>button {
+  background-color: #007bff;
+  color: white;
 }
